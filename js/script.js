@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded',()=>{
 
+    //TABS
     const tabsParent  = document.querySelector('.tabheader__items');
     const tabs = document.querySelectorAll('.tabheader__item');
     const tabsContent = document.querySelectorAll('.tabcontent');
@@ -60,19 +61,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     hideTabContent();
     showTabContent();
   
@@ -81,14 +69,83 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 
+    //TIMER
+
+    const deadLine = '2020-3-10';
+
+
+    function getTimeRemaining(endTime)
+    {
+        let days, hours, minutes, seconds;
+        const t = Date.parse(endTime) - Date.parse(new Date());
+
+
+        if(t<=0)
+        {
+            days = hours = minutes = seconds = 0;
+        }else{
+            days = Math.floor(t / (1000*60*60*24)),
+            hours =  Math.floor((t / (1000*60*60*24)) % 24),
+            minutes = Math.floor(t / (1000*60) % 60),
+            seconds = Math.floor((t/1000)%60);
+        }
+
+        
+        return{
+            'total': t,
+            'days':  days,
+            'hours': hours,
+            'minutes': minutes,
+            'seconds': seconds,
+        };
+        
+
+    }
+
+    function getZero(num)
+    {
+        if(num<10)
+        {
+            return `0${num}`
+        }
+        else{
+            return num;
+        }
+
+    }
+
+
+    function setClock(selector, endtime)
+    {
+        const timer = document.querySelector(selector);
+        const days = timer.querySelector('#days');
+        const hours = timer.querySelector('#hours');
+        const minutes = timer.querySelector('#minutes');
+        const seconds = timer.querySelector('#seconds');
+
+        const timeInterval = setInterval(updateClock,1000);
+        updateClock();
+
+        function updateClock()
+        {
+            const t = getTimeRemaining(endtime);
+            days.innerHTML = getZero(t['days']);
+            hours.innerHTML = getZero(t['hours']);
+            minutes.innerHTML = getZero(t['minutes']);
+            seconds.innerHTML = getZero(t['seconds']); 
+            if(t['total']<=0)
+            {
+                clearInterval(timeInterval);
+            }
+        }
+
+        
+    }
 
 
 
-
-
-
-
-
+    setClock('.timer', deadLine);
 
 
 });
+
