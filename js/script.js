@@ -280,13 +280,17 @@ window.addEventListener('scroll',showModalByScroll);
 
 
                                                     //Carts(with class)
+//...clases - это аргумент в который будем закидывать классы, которые будут применяться
+//ну типо для кастомизации. Мы знать незнаем сколько их там будет поэтому делаем через rest оператор
 class MenuCart{
-    constructor(src,alt,title,desr,price,parentSelector){
+    constructor(src,alt,title,desr,price,parentSelector,...classes){
         this.src = src;
         this.alt = alt;
         this.title = title;
         this.desr = desr;
         this.price= price;
+        //не забываем что rest оператор вернёт МАССИВ поэтому и работать надо будет как с массивом
+        this.classes = classes;
         //родительский элемент КУДА будем вставлять наш класс
         this.parent = document.querySelector(parentSelector);
         //курс валюты
@@ -302,8 +306,27 @@ class MenuCart{
     render()
     {
         const element = document.createElement('div');
+
+        //т.к у на есть классы которые кидали через rest надо перебрать их(ибо они в массиве)
+        //и подкинуть их нашему element
+        //реализуем кстати через If будем проверять, а то вдург пользователь забыл классы подкинуть
+        //в таком случае сделаем что бы было хотя бы дефолтный
+
+        if(this.classes.length ===0)
+        {
+            //создастася новое своейство в нашем классе this.element
+            this.element = 'menu__item';
+
+            //а теперь добавляем СВОЙСТВО this.element, к нашему элементу element
+            element.classList.add(this.element);
+        }
+        else
+        {
+            this.classes.forEach(className =>{element.classList.add(className)});
+        }
+
         element.innerHTML = `
-            <div class="menu__item">
+            
                 <img src=${this.src} alt=${this.alt}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
                 <div class="menu__item-descr">${this.desr}</div>
@@ -312,7 +335,7 @@ class MenuCart{
                     <div class="menu__item-cost">Цена:</div>
                     <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
                 </div>
-            </div>
+            
         `;
 
         //помещаем наш элемент на страницу
@@ -332,7 +355,9 @@ new MenuCart(
     'Меню "Фитнес"',
     'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
     9,
-    '.menu .container'
+    '.menu .container',
+    'menu__item',
+    'big'                 //тестовый класс, ну просто убедиться что всё работает
 
 ).render();
 
@@ -342,7 +367,9 @@ new MenuCart(
     'Меню “Премиум”',
     'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан',
     5,
-    '.menu .container'
+    '.menu .container',
+    'menu__item'
+
 
 ).render();
 
@@ -353,7 +380,8 @@ new MenuCart(
     'Меню "Постное"',
     'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ',
     10,
-    '.menu .container'
+    '.menu .container',
+    'menu__item'
 
 ).render();
 
