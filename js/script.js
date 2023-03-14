@@ -437,9 +437,8 @@ function postData(form)
         request.open('POST','server.php');
 
         //продолжаем донастраивать
-        //В теории нам нужен ещё ЗАГОЛОВОК. НО если мы используем XMLHttpRequest()  + FormData 
-        //то заголовок утснавливать НЕНУЖНО. Иначе если бы установим его то получим пустой объект
-        //request.setRequestHeader('Content-type','multipart/form-data');
+        //ставим заголовок для JSON
+        request.setRequestHeader('Content-type','application/json');
 
         //КАК нам теперь получить те данные которые ввёл пользователь в форме. Но получить надо их в JS
         // в форме объекта и его уже отдать серверу?
@@ -451,14 +450,24 @@ function postData(form)
         //Формирует FormData() даные в форме "ключ-значение"
         //во внуть кидаем то ОТКУДА надо забрать данные
         const formData  = new FormData(form); 
-        //САМОЕ ГЛАВНОЕ что бы в вёрсте У элементов которые пойдут на сервер ДОЛЖНЕН БЫТЬ УКАЗАН АТРИБУ name
-        //иначе будешь дебажить часами 
-        //вот например инпут
-        //<input required placeholder="Ваше имя" name="name" type="text" class="modal__input">
-        //как видно у него есть атрибут  name="name"  если его не указать то будут проблемы.
+
+        //Мы можем переделать наш элемент в formData в объект JSON 
+        //для этого существует вот такой приём
+        const object = {};
+        formData.forEach(function(value, key){
+            //формируем объект
+            object[key] = value;
+        });
+
+        //теперь когда у нас есть ОБЫЧНЫЙ ОБЪЕКТ мы можем спарсить его в json
+        const json = JSON.stringify(object);
 
         //отправляем
-        request.send(formData);
+        //P.s не забудь поправить файл server.php
+        //ибо php нативно НЕУМЕЕТ работать с данными JSON
+        //поэтому добавь в server.php следующее
+        //$_POST = json_decode(file_get_contents("php://input"), true);
+        request.send(json);
 
 
         //теперь отследим загрузку на сервер. Воспользуемся событием load.(сработает когда получим ответ от сервера)
