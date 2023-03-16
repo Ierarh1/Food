@@ -175,8 +175,7 @@ setClock('.timer',deadLine);
 const modalTrigger = document.querySelectorAll('[data-modal]');
 //само модальное окно
 const modal        = document.querySelector('.modal');
-//кнопка закрытия модального окна
-const modalCloseBtn= document.querySelector('[data-close]');
+
 
 
 //логика такая. Нам надо всего лишь две функции 1)открывает модалку. 2)закрывает модалку
@@ -211,15 +210,18 @@ function closeModal()
 }
 
 
-//закрываем модальное окно
-modalCloseBtn.addEventListener('click',closeModal);
+
 
 
 //как сделать так что бы пользователь кликал на подложку модального окна и оно закрывалось
 //важно что бы html была нормальная структура что бы modal__dialog была рабочей областью
 //а уже Modal была полдожкой.
+//расширим функционал подложки, теперь если мы щёлкнём на подложку или на какой нибудь 
+//элемент с атрибутом [data-close] это наш крестик на модальном окне то окно закроется
+//кстати сравнивать будем с пустой строкой тк нам нужно именно булевый ответ, а пустая строка
+//потому как мы event.target.getAttribute('data-close') ничего не присваивали
 modal.addEventListener('click',(event)=>{
-    if(modal === event.target)
+    if(modal === event.target ||  event.target.getAttribute('data-close') == '')
     {
         closeModal();
     }
@@ -398,7 +400,7 @@ const forms = document.querySelectorAll('form');
 
 //организуем сообщения которые будут выдаваться при загрузке страницы
 const message = {
-    loading: 'загрузка....',
+    loading: 'img/form/spinner.svg',
     success: 'спасибо данные отправленны',
     failure: 'что-то пошло не так'
 }
@@ -420,12 +422,18 @@ function postData(form)
 
 
         //это блок с сообщения который будет добавляться к форме
-        const statusMessage = document.createElement('div');
-        //накидываем классы какие нибудь(опционально)
-        statusMessage.classList.add('status');
-        //и теперь записываем то сообщение которое хотим показать
-        statusMessage.textContent = message.loading;
-        form.append(statusMessage);
+        //у нас там будет спиннер поэтому создаём img
+        const statusMessage = document.createElement('img');
+        //теперь нашему тэгу надо кинуть путь к нашему спинеру, делается так
+        statusMessage.src = message.loadingl; 
+        //тк у на появляется изображение то всё таки ему нужны кое какие дополнительные стили
+        //накинем их как инлайн стили
+        statusMessage.style.cssText = `
+                dispay: block;
+                margin: 0 auto;
+        `;
+
+        form.insertAdjacentElement('afterend',statusMessage);
 
 
         e.preventDefault();
@@ -478,27 +486,81 @@ function postData(form)
                 console.log(request.response);
 
                 //не забываем про статусмесседж. Надо сказать мол спасибо данные отправленны.
-                statusMessage.textContent = message.success;
+                //ток реализуем через функцию
+                showThanksModal(message.success);
 
 
                 //очищаем форму. Можем взять форму и перебрать value наших input  и очистить их 
                 //либо в наглую воспользоваться спец командой reset
                 form.reset();
 
-                //и надо удалить блок 
-                setTimeout(() => {
-                    //удаляем блок
-                    statusMessage.remove();
-                }, 3000);
+                statusMessage.remove();
+                
             }
             else
             {
-                //а тут скажем что всё плохо
-                statusMessage.textContent = message.failure;
+                //а тут скажем что всё плохо Но так же сделаем через нашу новую функцию
+                showThanksModal(message.failure);
             }
         });
     });
 }
+
+
+
+
+//логика такая Мы скрываем старый '.modal__dialog'. А затем создаём новый '.modal__dialog' и наполняем его
+//контентом.
+function showThanksModal(message)
+{
+    //будем заменять наш modal__dialog у него есть какие никакие стили, и позиционирование
+    const prevModalDialog = document.querySelector('.modal__dialog');
+
+    //скроем наш modal__dialog. ВАЖНО мы именно скрываем. Удалять НЕЛЬЗЯ, иначе если пользовать переоткроет окно
+    //то оно тупо неоткроется больше, ибо мы его удалили. Поэтому СКРЫВАЕМ
+    prevModalDialog.classList.add('hide');
+
+    //и откроем модальное окно
+    openModal();
+
+    //теперь можно создавать наш контент
+    //вначале сделаем блок обёртку
+    const thanksModal = document.createElement('div');
+    
+    //назначим ему классы что бы он нормально выглядел.
+    //закинем ему классов от .modal__dialog. По сути мы заменили старый .modal__dialog на новый .modal__dialog
+    thanksModal.classList.add('modal__dialog');
+
+    //а теперь формируем ту вёрстку что будет у нас в окне
+    //сделаем такую же как у нас была в стандартном окне
+    thanksModal.innerHTML = `
+        <div class ="modal__content">
+            <div data-close class="modal__close">×</div>
+            <div class="modal__title">${message}</div>
+        </div>
+    `;
+    document.querySelector('.modal').append(thanksModal);
+
+    //теперь нам необходимо что бы после того как поблагодарили пользователя
+    //наше окно с благодарностями исчезло а старый функционал восстановился
+    setTimeout(()=>{
+        //мы можем наше окошко с благодарностями удалить
+        thanksModal.remove();
+        prevModalDialog.classList.add('show');
+        prevModalDialog.classList.remove('hide');
+
+        //и теперь надо закрыть модалку дабы не мешать пользователю
+        closeModal();
+    },4000);
+}
+
+
+
+
+
+
+
+
 
 
 
