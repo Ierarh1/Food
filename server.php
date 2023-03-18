@@ -1,7 +1,7 @@
 <?php
 //тк. мы отправляем JSON-файлик, а php не умеет работать нативно с JSON. То надо немного модифицировать
 //наш виртуальный сервер.
-//$_POST = json_decode(file_get_contents("php://input"), true);
+$_POST = json_decode(file_get_contents("php://input"), true);
 //это к вопросу "А как на php получить json-файлик и с ним поработать"
 
 

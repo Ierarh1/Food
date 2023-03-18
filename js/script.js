@@ -452,14 +452,14 @@ function postData(form)
 
         //Мы можем переделать наш элемент в formData в объект JSON 
         //для этого существует вот такой приём
-                                                    /*    const object = {};
-                                                        formData.forEach(function(value, key){
-                                                            //формируем объект
-                                                            object[key] = value;
-                                                        }); */
+        const object = {};
+        formData.forEach(function(value, key){
+            //формируем объект
+            object[key] = value;
+        }); 
 
         //теперь когда у нас есть ОБЫЧНЫЙ ОБЪЕКТ мы можем спарсить его в json
-        //const json = JSON.stringify(object);
+        const json = JSON.stringify(object);
 
   
                          //Fetch() - будем отправлять данные с помощью ФЕТЧА
@@ -468,10 +468,10 @@ function postData(form)
         fetch('server.php',{
             method : 'POST',
             //если отправляешь formData то заголовки НЕНУЖНЫ. Если json НУЖНЫ.
-          /*   headers: {
+            headers: {
                 'Content-type': 'application/json',
-            }, */
-            body: formData
+            }, 
+            body: json
             //теперь мы выполним те же действия что были при положительном исходе, только когда мы 
             //писали запрос через XmlHTTPrequest(я для примера оставлю старый код проверки на 
             // request.addEventListener('load',()=>{      он ниже будет
