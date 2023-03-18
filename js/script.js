@@ -476,6 +476,8 @@ function postData(form)
             //писали запрос через XmlHTTPrequest(я для примера оставлю старый код проверки на 
             // request.addEventListener('load',()=>{      он ниже будет
         }).then((data)=>{
+            return data.text();
+        }).then((data)=>{
             console.log(data);
             showThanksModal(message.success);
 
