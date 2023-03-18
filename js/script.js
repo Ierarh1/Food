@@ -459,7 +459,7 @@ function postData(form)
                                                         }); */
 
         //теперь когда у нас есть ОБЫЧНЫЙ ОБЪЕКТ мы можем спарсить его в json
-        const json = JSON.stringify(object);
+        //const json = JSON.stringify(object);
 
   
                          //Fetch() - будем отправлять данные с помощью ФЕТЧА
