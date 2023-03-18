@@ -438,16 +438,7 @@ function postData(form)
 
         e.preventDefault();
 
-        //стандартный запрос
-        const request = new XMLHttpRequest();
-
-        //1)данные постим. 2)на наш php файлик 
-        request.open('POST','server.php');
-
-        //продолжаем донастраивать
-        //ставим заголовок для JSON
-        request.setRequestHeader('Content-type','application/json');
-
+ 
         //КАК нам теперь получить те данные которые ввёл пользователь в форме. Но получить надо их в JS
         // в форме объекта и его уже отдать серверу?
         //1)конечно мы могли бы взять форму, взять все input  а точнее их value перебрать, сформировать объект
@@ -461,48 +452,69 @@ function postData(form)
 
         //Мы можем переделать наш элемент в formData в объект JSON 
         //для этого существует вот такой приём
-        const object = {};
-        formData.forEach(function(value, key){
-            //формируем объект
-            object[key] = value;
-        });
+                                                    /*    const object = {};
+                                                        formData.forEach(function(value, key){
+                                                            //формируем объект
+                                                            object[key] = value;
+                                                        }); */
 
         //теперь когда у нас есть ОБЫЧНЫЙ ОБЪЕКТ мы можем спарсить его в json
         const json = JSON.stringify(object);
 
-        //отправляем
-        //P.s не забудь поправить файл server.php
-        //ибо php нативно НЕУМЕЕТ работать с данными JSON
-        //поэтому добавь в server.php следующее
-        //$_POST = json_decode(file_get_contents("php://input"), true);
-        request.send(json);
+  
+                         //Fetch() - будем отправлять данные с помощью ФЕТЧА
+        //1)куда обращаемся "server.php"
+        //2)идёт ОБЪЕКТ {} его будем наполнять данными. Описывать их нет смысла ибо и так всё видно и понятно
+        fetch('server.php',{
+            method : 'POST',
+            //если отправляешь formData то заголовки НЕНУЖНЫ. Если json НУЖНЫ.
+          /*   headers: {
+                'Content-type': 'application/json',
+            }, */
+            body: formData
+            //теперь мы выполним те же действия что были при положительном исходе, только когда мы 
+            //писали запрос через XmlHTTPrequest(я для примера оставлю старый код проверки на 
+            // request.addEventListener('load',()=>{      он ниже будет
+        }).then((data)=>{
+            console.log(data);
+            showThanksModal(message.success);
 
-
-        //теперь отследим загрузку на сервер. Воспользуемся событием load.(сработает когда получим ответ от сервера)
-        request.addEventListener('load',()=>{
-            //статус 200 эт всё ок
-            if(request.status == 200)
-            {
-                console.log(request.response);
-
-                //не забываем про статусмесседж. Надо сказать мол спасибо данные отправленны.
-                //ток реализуем через функцию
-                showThanksModal(message.success);
-
-
-                //очищаем форму. Можем взять форму и перебрать value наших input  и очистить их 
-                //либо в наглую воспользоваться спец командой reset
-                form.reset();
-
-                statusMessage.remove();
-                
-            }
-            else
-            {
-                //а тут скажем что всё плохо Но так же сделаем через нашу новую функцию
-                showThanksModal(message.failure);
-            }
+            statusMessage.remove();
+        }).catch(()=>{
+            showThanksModal(message.failure);
+        }).finally(()=>{
+            form.reset();
         });
+       
+
+
+                                //СТАРЫЙ КОД ДЛЯ ПРОВЕРКИ через XmlHTTPrequest
+        //теперь отследим загрузку на сервер. Воспользуемся событием load.(сработает когда получим ответ от сервера)
+        /*         request.addEventListener('load',()=>{
+                    //статус 200 эт всё ок
+                    if(request.status == 200)
+                    {
+                        console.log(request.response);
+
+                        //не забываем про статусмесседж. Надо сказать мол спасибо данные отправленны.
+                        //ток реализуем через функцию
+                        showThanksModal(message.success);
+
+
+                        //очищаем форму. Можем взять форму и перебрать value наших input  и очистить их 
+                        //либо в наглую воспользоваться спец командой reset
+                        form.reset();
+
+                        statusMessage.remove();
+                        
+                    }
+                    else
+                    {
+                        //а тут скажем что всё плохо Но так же сделаем через нашу новую функцию
+                        showThanksModal(message.failure);
+                    }
+                }); */
+                                //СТАРЫЙ КОД ДЛЯ ПРОВЕРКИ через XmlHTTPrequest ЗАКОНЧИЛСЯ
     });
 }
 
