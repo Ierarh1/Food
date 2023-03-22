@@ -165,3 +165,32 @@ const IWLB = new Promise((resolve,reject)=>{
     console.log('окончательные данные');
     console.log(data);
 });
+
+
+
+
+const tr4 = new Promise((resolve,reject)=>{
+   setTimeout(() => {
+    console.log('создание объекта');
+    const obj = {};
+    resolve(obj);
+   }, 2000);
+}).then((data)=>{
+    return new Promise((resolve,reject)=>{
+        setTimeout(() => {
+            console.log('Модификация объекта');
+            data.name = 'Andrei';
+            resolve(data);
+        }, 2000);
+    });
+}).then((data)=>{
+    new Promise((resolve,reject)=>{
+        setTimeout(() => {
+            console.log('Добавляем зарплату');
+            data.profit = '7000$';
+            console.log('наш объект');
+            console.log(data);
+            resolve(data);
+        }, 2000);
+    });
+});
