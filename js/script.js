@@ -245,21 +245,12 @@ document.addEventListener('keydown',(e)=>{
 
 //Через какое -то время будет появляться модальное окно.
 
-
-
-
-
-
-
-
-
-                                            //расскоментируй
 const modalTimer = setTimeout(openModal, 3000);
 
 
 
 
-//реализуем фичу, когда модальное окно открывается когда пользователь доскроллил доконца
+//реализуем фичу, когда модальное окно открывается когда пользователь доскроллил доконца страницу
 function showModalByScroll(){
     // window.pageXOffset -ПРОКРУЧЕННАЯ ЧАСТЬ
     //document.documentElement.clientHeight -видимая часть  которую мы видим без прокрутки
@@ -384,6 +375,17 @@ getResource('http://localhost:3000/menu')
             new MenuCart(img, altimg, title, descr, price, '.menu .container').render();
         })
     })
+
+//вариант запроса данных но черех библиотеку axios
+/* axios.get('http://localhost:3000/menu')
+    .then(data => {
+        data.data.forEach(({img,altimg,title,descr,price})=>{
+            new MenuCart(img,altimg,title,descr,price,'.menu .container').render();
+        });
+    });
+
+ */
+//как видно у нас всего лишь одна функция
 
                             //то как мы раньше создавали элементы на странице
 /* new MenuCart(
@@ -573,18 +575,83 @@ function showThanksModal(message)
 
 
 
+                                                    //SLIDER Version 1
+//сами слайдеры, картиночки
+const slides = document.querySelectorAll('.offer__slide');
+//стрелочка предыдущий слайд
+const prev   = document.querySelector('.offer__slider-prev');
+//стрелочка следующий слайд
+const next   = document.querySelector('.offer__slider-next');
+//Это ОБЩЕЕ количество слайдов
+const total  = document.querySelector('#total');
+//эт текущий слайд
+const current= document.querySelector('#current');
+
+//данный индекс будет определять текущее положение в слайдере
+let slideIndex = 1;
+
+//надо проинициализировать наш слайдер иначе будут косяки
+showSlides(slideIndex);
+
+//определим общее количество слайдеров и поместим на страничку
+//если их меньше 10 то добавим нолик (03 05 07...)
+if(slides.length <10)
+{
+    total.textContent = `0${slides.length}`
+}
+else
+{
+    total.textContent = slides.length;
+}
+
+
+function showSlides(n){
+    //предусмотрим граничные значения, когда мы из последнего слайда перемещаемся в первый и наоборот
+    if(n>slides.length)
+    {
+        //перемещаемся в начало
+        slideIndex = 1;
+    }
+
+    if(n < 1)
+    {
+        //перемещаемся в конец
+        slideIndex = slides.length;
+    }
+
+    //надо скрыть все слайды и показать только тот  что нам нужен
+    slides.forEach(item => item.style.display = 'none');
+
+    //берём нужный слайд и показываем нужный
+    slides[slideIndex - 1].style.display = 'block';
+
+
+    //реализум переключение циферок для текущего слайда
+    if(slides.length<10)
+    {
+        current.textContent = `0${slideIndex}`
+    }
+    else{
+        current.textContent = slideIndex;
+    }
+}
+
+//функция которая будет отнимать/прибавлять значения
+function plusSlides(n)
+{
+    showSlides(slideIndex +=n);
+}
 
 
 
+//вешаем обработчики
+prev.addEventListener('click',()=>{
+    plusSlides(-1);
+});
 
-
-
-
-
-
-
-
-
+next.addEventListener('click',()=>{
+    plusSlides(+1);
+});
 
 
 
