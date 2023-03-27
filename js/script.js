@@ -574,7 +574,7 @@ function showThanksModal(message)
 }
 
 
-
+/* 
                                                     //SLIDER Version 1
 //сами слайдеры, картиночки
 const slides = document.querySelectorAll('.offer__slide');
@@ -627,7 +627,7 @@ function showSlides(n){
 
 
     //реализум переключение циферок для текущего слайда
-    if(slides.length<10)
+    if(slideIndex<10)
     {
         current.textContent = `0${slideIndex}`
     }
@@ -652,6 +652,162 @@ prev.addEventListener('click',()=>{
 next.addEventListener('click',()=>{
     plusSlides(+1);
 });
+
+ */
+
+
+
+                                                    //SLIDER Version 2
+
+//сами слайдеры, картиночки
+const slides        = document.querySelectorAll('.offer__slide');
+//стрелочка предыдущий слайд
+const prev          = document.querySelector('.offer__slider-prev');
+//стрелочка следующий слайд
+const next          = document.querySelector('.offer__slider-next');
+//Это ОБЩЕЕ количество слайдов
+const total         = document.querySelector('#total');
+//эт текущий слайд
+const current       = document.querySelector('#current');
+//наша обёртка-окошко через которое будем наблюдать за слайдами
+const slidesWrapper = document.querySelector('.offer__slider-wrapper');
+//наша каруселька со сладами
+const slidesField   = document.querySelector('.offer__slider-inner');
+
+//при итнициализации слайдера нам понадибтся знать КАКАЯ ШИРИНА у на шего главного блока 
+//в котором будут показываться слайды '.offer__slider-wrapper' Эти данные вытащим через 
+//compudet стили - это уже примененные стили
+const width = window.getComputedStyle(slidesWrapper).width;
+
+//данный индекс будет определять текущее положение в слайдере
+let slideIndex = 1;
+
+//нам понадобится знать ОТСТУП на сколько мы отсупили ВПРАВО/ВЛЕВО
+let offset = 0;
+
+//инициализируем общее количество слайдов и текущий слайд
+if(slides.length <10)
+{
+    total.textContent = `0${slides.length}`;
+    current.textContent = `0${slideIndex}`;
+}
+else
+{
+    total.textContent = slides.length;
+    current.textContent = slideIndex;
+}
+
+
+//slidesWrapper -будет занимать довольно большое пространство в ОДНУ СТРОЧКУ
+//и внутри себя оно будет как раз выстраивать слайды.
+//Поэтому надо установить этому блоку ШИРИНУ. т.е умножить количество слайдов на 100%
+slidesField.style.width = (100 * slides.length) + '%';
+//делаем это для того что бы МОЖНО БЫЛО взять все слайды и затолкать во внутрь slidesField
+//ну  и они вроде как полностью помещались
+
+//так же нам надо что бы слайды выстроились в один ряд по горизонтали для этого поставим flex
+slidesField.style.display = 'flex';
+
+//плавную анимацию прикрутим
+slidesField.style.transition = '0.5s all';
+
+
+//теперь самое главное, ограничим обзор наших слайдов что бы показывалось только то что не выходит
+//за границу slidesWrapper
+slidesWrapper.style.overflow = 'hidden';
+
+
+
+//т.к помещаемые слайды могут быть РАЗНОЙ ширины, т.е не фексированныей
+//поэтому давайте установим им ширину нашего родительского окошка 
+slides.forEach(slide => slide.style.width = width);
+
+
+
+//двигаем в право
+next.addEventListener('click',()=>{
+
+    //сдлеаем небольшое условие, когда щёлкаем вправо и доходим до конца, мы возвращаемся на 1 слайд
+    //p.s в width хранится примерно такое число "500px" и нам надо избавиться от "px" и превратить в число
+    //поэтому будет +width.slice(0,width.length-2)  так мы отрежим "px" и превратим в число
+    if(offset == +width.slice(0,width.length-2) * (slides.length-1))
+    {   //мы долистали доконца и нам надо вернуться в начало
+        offset = 0;
+    }
+    else
+    {
+        //если же слайд НЕ ПОСЛЕДНИЙ то добавляем смещение
+        offset += +width.slice(0,width.length-2);
+    }
+
+    //когда мы нажимаем кнопку нам необходимо сдвинуть слайд
+    slidesField.style.transform = `translateX(-${offset}px)`;
+
+    //тут работаем с нашим текущим слайдом, увеличиваем значение
+    if(slideIndex == slides.length)
+    {
+        slideIndex = 1;
+    }
+    else
+    {
+        slideIndex++;
+    }
+
+    if(slideIndex <10)
+    {
+        current.textContent = `0${slideIndex}`;
+    }else{
+        current.textContent = slideIndex;
+    }
+
+});
+
+//двигаем в лево
+prev.addEventListener('click',()=>{
+
+    //есле мы на 1 слайде, и шёлкаем влево, то нам надо сместиться на последний слайд
+    if(offset == 0)
+    {   
+        offset = +width.slice(0,width.length-2) * (slides.length-1);
+    }
+    else
+    {
+        //если же слайд НЕ ПОСЛЕДНИЙ то добавляем смещение
+        offset -= +width.slice(0,width.length-2);
+    }
+
+    //когда мы нажимаем кнопку нам необходимо сдвинуть слайд
+    slidesField.style.transform = `translateX(-${offset}px)`;
+
+
+    //тут работаем с нашим текущим слайдом, увеличиваем значение
+    if(slideIndex == 1)
+    {
+        slideIndex = slides.length;
+    }
+    else
+    {
+        slideIndex--;
+    }
+
+    
+    //тут добавляем помещаем на страницу текущий слайд
+    if(slideIndex <10)
+    {
+        current.textContent = `0${slideIndex}`;
+    }else{
+        current.textContent = slideIndex;
+    }
+});
+
+
+
+
+
+
+
+
+
 
 
 

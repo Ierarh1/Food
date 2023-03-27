@@ -344,5 +344,66 @@ axios.get('http://localhost:3000/menu')
 
 
     
+
+                                            //slider
     
-        
+const slides = document.querySelectorAll('.offer__slide');
+
+const current= document.querySelector('#current');
+
+const total  = document.querySelector('#total');
+
+const prev   = document.querySelector('.offer__slider-prev');
+
+const next   = document.querySelector('.offer__slider-next');
+
+let slideIndex = 1;
+
+if(slides.length<10){
+    total.innerHTML = `0${slides.length}`
+}
+else
+{
+    total.innerHTML = slides.length;
+}
+
+
+showSlide(slideIndex);
+
+function showSlide(n){
+    if(n>slides.length)
+    {
+        slideIndex = 1;
+    }
+
+
+    if(n<1)
+    {
+        slideIndex = slides.length;
+    }
+
+    slides.forEach(item => item.style.display = 'none');
+
+    slides[slideIndex-1].style.display = 'block';
+
+
+
+    if(slideIndex<10){
+        current.innerHTML = `0${slideIndex}`
+    }
+    else{
+        current.innerHTML = slideIndex;
+    }
+}
+
+function plusSlide(n){
+    showSlide(slideIndex+=n);
+}
+
+prev.addEventListener('click',()=>{
+    plusSlide(-1);
+});
+
+next.addEventListener('click',()=>{
+    plusSlide(+1);
+});
