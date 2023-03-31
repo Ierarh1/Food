@@ -673,6 +673,10 @@ const current       = document.querySelector('#current');
 const slidesWrapper = document.querySelector('.offer__slider-wrapper');
 //наша каруселька со сладами
 const slidesField   = document.querySelector('.offer__slider-inner');
+//полностью весь срайдер. Эт нам надо что бы position: relative установить,
+//тогда мы сможем внутри абсолютно спозиционировать точки 
+const slider        = document.querySelector('.offer__slider');
+
 
 //при итнициализации слайдера нам понадибтся знать КАКАЯ ШИРИНА у на шего главного блока 
 //в котором будут показываться слайды '.offer__slider-wrapper' Эти данные вытащим через 
@@ -717,10 +721,58 @@ slidesField.style.transition = '0.5s all';
 slidesWrapper.style.overflow = 'hidden';
 
 
-
 //т.к помещаемые слайды могут быть РАЗНОЙ ширины, т.е не фексированныей
 //поэтому давайте установим им ширину нашего родительского окошка 
 slides.forEach(slide => slide.style.width = width);
+
+
+
+//меняем на relative тк как будем абсолютно позиционировать внутри него наши точки
+slider.style.position = 'relative';
+
+//создаём большую обёртку для всё наших точек
+const indicators  = document.createElement('ol');
+//а это у нас будет коллекция точек, отсюда мы будем вытягивать и манипулировать ими
+let   dots  = [];
+
+//назначим ему carousel-indicators этот класс уже есть в css там он даёт красивое оформление
+indicators.classList.add('carousel-indicators'); 
+//либо ты можешь его застилизовать прямо тут в  js при помощи indicators.style.cssText
+//но нам  и так нормально через css
+
+//и заталкиваем наш элемент внутрь нашего слайдера
+slider.append(indicators);
+
+//Теперь У нас на старнице есть <ol> но он пустой, основыаясь на количестве слайдов нам 
+//надо поместить такое же количество <li> они и будут представленны в виде точек
+//используем цикл
+for(let i = 0; i< slides.length; i++)
+{
+    //создаём точки
+    const dot = document.createElement('li');
+
+    //теперь нам нужно каждой точке установить СВОЙ атрибут, т.е что бы понимать что
+    //каждой точке идёт СВОЙ атрибут
+    dot.setAttribute('data-slide-to',i+1); 
+    //это будет так data-slide-to="1"   data-slide-to="2"    data-slide-to="3" .......
+
+    //теперь поместим стили всем нашим точкам. Дабы они нормально выглядели
+    dot.classList.add('dot');
+
+    //подстветим 1 точку, слайдер начинается с единицы, поэтому и подсвечивать будем первую точку
+    //p.s у останльныъ точек .opacity == 0.5 эт если что прозрачность
+    if(i==0)
+    {
+        dot.style.opacity = 1;
+    }
+
+    //всё теперь помещаем их внутрь нашего indicators
+    indicators.append(dot);
+
+    //наполняем наш массив, нашими точками
+    dots.push(dot);
+
+}
 
 
 
@@ -760,6 +812,14 @@ next.addEventListener('click',()=>{
         current.textContent = slideIndex;
     }
 
+
+    //а тут мы организуем подсвечивание наших дотсов
+    //сбрасываем прозрачность у всех дотов до 0.5 это по умолчанию везде так
+    dots.forEach(dot => dot.style.opacity = '.5');
+
+    //а теперь подсвечиваем конкретную доту
+    dots[slideIndex - 1].style.opacity = 1;
+
 });
 
 //двигаем в лево
@@ -798,11 +858,59 @@ prev.addEventListener('click',()=>{
     }else{
         current.textContent = slideIndex;
     }
+
+
+    //а тут мы организуем подсвечивание наших дотсов
+    //сбрасываем прозрачность у всех дотов до 0.5 это по умолчанию везде так
+    dots.forEach(dot => dot.style.opacity = '.5');
+
+    //а теперь подсвечиваем конкретную доту
+    dots[slideIndex - 1].style.opacity = 1;
 });
 
 
 
+//теперь организуем так что бы по нажатию на наши доты(точки) у нас сдвигался слайдер
+//менялся активный слайд.....
+dots.forEach(dot => {
+    dot.addEventListener('click',(e)=>{
+        // у наших точек если что 
+        //есть атрибуты data-slide-to="1"   data-slide-to="2"    data-slide-to="3" .......
+        //вытащим их 
+        const slideTo = e.target.getAttribute('data-slide-to');
 
+        //теперь контроль. Ту всё просто кликнули на 3 точку(data-slide-to="3")
+        //значит в  slideIndex пойдёт 4
+        slideIndex = slideTo;
+
+
+        //теперь контроль отсутов offset
+        offset = +width.slice(0, width.length-2) * (slideTo-1);
+
+        //и незабыть сделать отступ
+        slidesField.style.transform = `translateX(-${offset}px)`;
+
+        //далее не забываем про наши точки а именно их класс активности через opacity
+        //а тут мы организуем подсвечивание наших дотсов
+        //сбрасываем прозрачность у всех дотов до 0.5 это по умолчанию везде так
+        dots.forEach(dot => dot.style.opacity = '.5');
+        //а теперь подсвечиваем конкретную доту
+        dots[slideIndex - 1].style.opacity = 1;
+
+
+        //теперь контроль текущего слайда
+        if(slideIndex <10)
+        {
+            current.textContent = `0${slideIndex}`;
+        }else{
+            current.textContent = slideIndex;
+        }
+
+
+
+        
+    });
+});
 
 
 

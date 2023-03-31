@@ -346,64 +346,69 @@ axios.get('http://localhost:3000/menu')
     
 
                                             //slider
-    
-const slides = document.querySelectorAll('.offer__slide');
+//сами слайдеры, картиночки
+const slides        = document.querySelectorAll('.offer__slide');
+//стрелочка предыдущий слайд
+const prev          = document.querySelector('.offer__slider-prev');
+//стрелочка следующий слайд
+const next          = document.querySelector('.offer__slider-next');
+//Это ОБЩЕЕ количество слайдов
+const total         = document.querySelector('#total');
+//эт текущий слайд
+const current       = document.querySelector('#current');
+//наша обёртка-окошко через которое будем наблюдать за слайдами
+const slidesWrapper = document.querySelector('.offer__slider-wrapper');
+//наша каруселька со сладами
+const slidesField   = document.querySelector('.offer__slider-inner');
 
-const current= document.querySelector('#current');
-
-const total  = document.querySelector('#total');
-
-const prev   = document.querySelector('.offer__slider-prev');
-
-const next   = document.querySelector('.offer__slider-next');
-
-let slideIndex = 1;
-
-if(slides.length<10){
-    total.innerHTML = `0${slides.length}`
-}
-else
-{
-    total.innerHTML = slides.length;
-}
+const width         = window.getComputedStyle(slidesWrapper).width;
 
 
-showSlide(slideIndex);
+let slideIndex = 0;
+let offset     = 0;
 
-function showSlide(n){
-    if(n>slides.length)
-    {
-        slideIndex = 1;
-    }
+slidesField.style.display = 'flex';
+slidesField.style.width   = (100 * slides.length) + '%';
 
-
-    if(n<1)
-    {
-        slideIndex = slides.length;
-    }
-
-    slides.forEach(item => item.style.display = 'none');
-
-    slides[slideIndex-1].style.display = 'block';
+slidesWrapper.style.overflow = 'hidden';
 
 
-
-    if(slideIndex<10){
-        current.innerHTML = `0${slideIndex}`
-    }
-    else{
-        current.innerHTML = slideIndex;
-    }
-}
-
-function plusSlide(n){
-    showSlide(slideIndex+=n);
-}
-
-prev.addEventListener('click',()=>{
-    plusSlide(-1);
-});
 
 next.addEventListener('click',()=>{
-    plusSlide(+1);
+    if(offset == +width.slice(0,width.length-2)  * (slides.length-1))
+    {
+        offset = 0;
+    }
+    else{
+        offset += +width.slice(0,width.length-2);
+    }
+
+    slidesField.style.transform = `translateX(-${offset}px)`;
 });
+
+
+
+
+prev.addEventListener('click',()=>{
+
+    if(offset == 0)
+    {
+        offset = +width.slice(0, width.length-2) * (slides.length-1);
+        
+    }
+    else
+    {
+        offset -= +width.slice(0 , width.length-2);
+        
+    }
+
+    slidesField.style.transform = `translateX(-${offset}px)`;
+    
+});
+
+
+
+
+
+
+
