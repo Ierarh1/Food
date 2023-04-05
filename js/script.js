@@ -775,6 +775,16 @@ for(let i = 0; i< slides.length; i++)
 }
 
 
+function deleteNotDigits(str)
+{
+    //убираем все буквы, через ругулярку
+    //  /\D/   - все НЕЧИСЛА
+    //g        - глобально
+    return +str.replace(/\D/g,'');
+}
+
+
+
 
 //двигаем в право
 next.addEventListener('click',()=>{
@@ -782,14 +792,14 @@ next.addEventListener('click',()=>{
     //сдлеаем небольшое условие, когда щёлкаем вправо и доходим до конца, мы возвращаемся на 1 слайд
     //p.s в width хранится примерно такое число "500px" и нам надо избавиться от "px" и превратить в число
     //поэтому будет +width.slice(0,width.length-2)  так мы отрежим "px" и превратим в число
-    if(offset == +width.slice(0,width.length-2) * (slides.length-1))
+    if(offset == deleteNotDigits(width) * (slides.length-1))
     {   //мы долистали доконца и нам надо вернуться в начало
         offset = 0;
     }
     else
     {
         //если же слайд НЕ ПОСЛЕДНИЙ то добавляем смещение
-        offset += +width.slice(0,width.length-2);
+        offset += deleteNotDigits(width);
     }
 
     //когда мы нажимаем кнопку нам необходимо сдвинуть слайд
@@ -828,12 +838,12 @@ prev.addEventListener('click',()=>{
     //есле мы на 1 слайде, и шёлкаем влево, то нам надо сместиться на последний слайд
     if(offset == 0)
     {   
-        offset = +width.slice(0,width.length-2) * (slides.length-1);
+        offset = deleteNotDigits(width) * (slides.length-1);
     }
     else
     {
         //если же слайд НЕ ПОСЛЕДНИЙ то добавляем смещение
-        offset -= +width.slice(0,width.length-2);
+        offset -= deleteNotDigits(width);
     }
 
     //когда мы нажимаем кнопку нам необходимо сдвинуть слайд
@@ -885,7 +895,7 @@ dots.forEach(dot => {
 
 
         //теперь контроль отсутов offset
-        offset = +width.slice(0, width.length-2) * (slideTo-1);
+        offset = deleteNotDigits(width) * (slideTo-1);
 
         //и незабыть сделать отступ
         slidesField.style.transform = `translateX(-${offset}px)`;
