@@ -929,12 +929,82 @@ dots.forEach(dot => {
 //главный элемент на странице куда мы будем записывать результат
 const result = document.querySelector('.calculating__result span');
 
+
 //пол, рост, вес, восраст, коэффициент активность(валяется в data-атрибутах)
 //пол и активность зададим как по умолчанию, ибо по умолчанию в вёрстке уже выбраны значения
 
-let sex = 'female',
- height, weight ,age ,
+let sex, height, weight ,age ,
     ratio = 1.375;
+
+
+
+
+//внесём вот какую логику, если у нас есть localStorage и в нём УЖЕ ЕСТЬ данные sex и ratio
+//то мы вытащим их из localStorage если же нет, то запишем стандартные значения
+
+//вначале для sex
+if(localStorage.getItem('sex'))
+{
+    //теперь просто записываем значение из localStorage
+    sex = localStorage.getItem('sex');
+}else{
+
+    //если же LocalStorage пустой это значит что пользователь ещё ниразу не был на нашем сайте и надо установить 
+    //переменной значение по умолчанию
+    sex = 'female';
+
+    //незабываем так же и вписать в LocalStorage
+    localStorage.setItem('sex','female');
+}
+
+
+//теперь для ratio
+if(localStorage.getItem('ratio'))
+{
+    //теперь просто записываем значение из localStorage
+    ratio = localStorage.getItem('ratio');
+}else{
+
+    //если же LocalStorage пустой это значит что пользователь ещё ниразу не был на нашем сайте и надо установить 
+    //переменной значение по умолчанию
+    ratio = 1.375;
+
+    //незабываем так же и вписать в LocalStorage
+    localStorage.setItem('ratio',1.375);
+}
+
+
+//назначение этой функции, заглянуть в localStorage если там есть sex и  ratio  с каким либо значением
+//то она просто меняет классы активности на необходимые в соответствии с localStorage
+function initLocalSettings(selector,activeClass){
+
+    const elements = document.querySelectorAll(selector);
+
+    //в первом случае male/female ориентируемся на id
+    //во втором на data-атрибут
+    elements.forEach(elem =>{
+        elem.classList.remove(activeClass);
+
+        //если id кнопки сопадёт с элементом их localStorage. То данную кнопку мы покрасим классом активности
+        if(elem.getAttribute('id')  === localStorage.getItem('sex')){
+            elem.classList.add(activeClass);
+        }
+
+
+        //теперь эе ориентируемся на ratio
+        if(elem.getAttribute('data-ratio') === localStorage.getItem('ratio')){
+            elem.classList.add(activeClass);       
+        }
+
+    });
+
+}
+
+//незабываем вызвать функцию для инициализации
+initLocalSettings('#gender div','calculating__choose-item_active');
+initLocalSettings('.calculating__choose_big div','calculating__choose-item_active');
+
+
 
 
 //нам нужна общая функция которая будет заниматься подсчётами
@@ -1007,11 +1077,18 @@ function getStaticInformation(parentSelector,activeClass)
     
                 //теперь просто присваиваем нашему ratio значение из атрибута data-ratio
                 ratio = +e.target.getAttribute('data-ratio');
+
+
+                //запишем данные в localStorage
+                localStorage.setItem('ratio',+e.target.getAttribute('data-ratio'));
             } else
             {
                 //а у этих элементов нет data-ratio  а значит пользователь кликнул либо по 'мужчина' либо "женщина"
                 //и тут нам нужен тупо ID в котом написано male, female
                 sex = e.target.getAttribute('id');
+
+                //запишем данные в localStorage
+                localStorage.setItem('sex',e.target.getAttribute('id'));
             }
     
       
@@ -1063,6 +1140,16 @@ function getStaticInformation(parentSelector,activeClass)
 
         //событие input тк как нам надо отслеживать когда что-то добавляется/удаляется в нашем инпуте
         input.addEventListener('input',()=>{
+
+            //ввёдем небольшую проверку, если пользователь ввёл в наш инпут НЕЧИСЛО, то мы подкрасим наш инпут
+            //сделаем через регулярные выражения
+            if(input.value.match(/\D/g))
+            {
+                input.style.border = '1px solid red';
+            }else{
+                input.style.border = 'none';
+            }
+
 
             //мы понятие не имеем с какой конкретной переменно мы будем работать height, weight ,age
             //поэтому надо через условия сделать, но у наших инпутов есть уникальные id
